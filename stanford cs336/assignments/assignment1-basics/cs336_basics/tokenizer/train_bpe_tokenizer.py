@@ -2,6 +2,8 @@ import regex as re
 import collections
 import multiprocessing
 import heapq
+import pickle
+import os
 from utils import find_chunk_boundaries, convert_word_to_bytes
 
 ########################################################
@@ -363,6 +365,7 @@ def merge_pairs(vocab: dict, vocab_reverse: dict, word_counter: collections.Coun
         >>> # Returns list of 4 merges, e.g., [b'll', b'he', b'llo', b'hello']
     """
     merges = []
+    merges_set = set()
     merge_counts = vocab_size - len(vocab)
     
     pair_counter, pair_to_words = build_pair_counter(word_counter)
@@ -371,20 +374,26 @@ def merge_pairs(vocab: dict, vocab_reverse: dict, word_counter: collections.Coun
     heap = [(-freq, pair) for pair, freq in pair_counter.items()]
     heapq.heapify(heap)
     
-    for _ in range(merge_counts):
+    while merge_counts > 0:
         # find the highest frequency pair
         _, most_frequent_pair = heapq.heappop(heap)
-        
+        if most_frequent_pair in merges_set:
+            continue
+            
+        merges_set.add(most_frequent_pair)
+
         pair_bytes = vocab[vocab_reverse[most_frequent_pair[0]]] + vocab[vocab_reverse[most_frequent_pair[1]]]
         pair_bytes_index = len(vocab)
         
         # add the pair to the vocab, vocab_reverse, merges
         vocab[pair_bytes_index] = pair_bytes
         vocab_reverse[pair_bytes] = pair_bytes_index
-        merges.append(pair_bytes)
+        merges.append(most_frequent_pair)
         
         # merge the pair
         merge_pair(most_frequent_pair, pair_bytes, word_counter, pair_counter, pair_to_words, heap)
+        
+        merge_counts -= 1
     
     return merges
     
@@ -425,7 +434,6 @@ def train_bpe_tokenizer(input_path: str, vocab_size: int, special_tokens: list[s
     vocab, vocab_reverse = initialize_vocab_and_special_tokens(256, special_tokens)
     
     # STEP 2: pre-tokenization
-    import os
     file_size = os.path.getsize(input_path)
     # Use fewer chunks for smaller files, more for larger files
     # Aim for chunks of ~10-50MB each
@@ -451,27 +459,31 @@ if __name__ == "__main__":
         {
             "name": "TinyStoriesV2-GPT4-train",
             "path": "../../data/TinyStoriesV2-GPT4-train.txt",
+            "output_path": "../../data/output",
             "vocab_size": 10000,
             "special_tokens": ["<|endoftext|>"]
         },
-        {
-            "name": "TinyStoriesV2-GPT4-valid",
-            "path": "../../data/TinyStoriesV2-GPT4-valid.txt",
-            "vocab_size": 10000,
-            "special_tokens": ["<|endoftext|>"]
-        },
-        {
-            "name": "owt_train",
-            "path": "../../data/owt_train.txt",
-            "vocab_size": 32000,
-            "special_tokens": ["<|endoftext|>"]
-        },
-        {
-            "name": "owt_valid",
-            "path": "../../data/owt_valid.txt",
-            "vocab_size": 32000,
-            "special_tokens": ["<|endoftext|>"]
-        }
+        # {
+        #     "name": "TinyStoriesV2-GPT4-valid",
+        #     "path": "../../data/TinyStoriesV2-GPT4-valid.txt",
+        #     "output_path": "../../data/output",
+        #     "vocab_size": 10000,
+        #     "special_tokens": ["<|endoftext|>"]
+        # },
+        # {
+        #     "name": "owt_train",
+        #     "path": "../../data/owt_train.txt",
+        #     "output_path": "../../data/output",
+        #     "vocab_size": 32000,
+        #     "special_tokens": ["<|endoftext|>"]
+        # },
+        # {
+        #     "name": "owt_valid",
+        #     "path": "../../data/owt_valid.txt",
+        #     "output_path": "../../data/output",
+        #     "vocab_size": 32000,
+        #     "special_tokens": ["<|endoftext|>"]
+        # }
     ]
     
     # Store results for table display
@@ -494,6 +506,13 @@ if __name__ == "__main__":
             "time": time_consumed,
             "merges": len(merges)
         })
+        
+        # write the vocab and merges to files
+        with open(os.path.join(config['output_path'], f"{config['name']}_vocab.pkl"), "wb") as f:
+            pickle.dump(vocab, f)
+        with open(os.path.join(config['output_path'], f"{config['name']}_merges.pkl"), "wb") as f:
+            pickle.dump(merges, f)
+        
         print(f"Completed {config['name']} in {time_consumed:.2f} seconds")
     
     # Print results table
