@@ -4,17 +4,21 @@
     "type": "split",
     "children": [
       {
-        "id": "91001322ac892d93",
+        "id": "d853448433511067",
         "type": "tabs",
         "children": [
           {
-            "id": "bb4d3e521b19bd1b",
+            "id": "ad9651148e3926e8",
             "type": "leaf",
             "state": {
-              "type": "empty",
-              "state": {},
+              "type": "markdown",
+              "state": {
+                "file": "conflict-files-obsidian-git.md",
+                "mode": "source",
+                "source": false
+              },
               "icon": "lucide-file",
-              "title": "New tab"
+              "title": "conflict-files-obsidian-git"
             }
           }
         ]
@@ -176,8 +180,9 @@
       "table-editor-obsidian:Advanced Tables Toolbar": false
     }
   },
-  "active": "bb4d3e521b19bd1b",
+  "active": "6a3b5b3dc11086ef",
   "lastOpenFiles": [
+    "conflict-files-obsidian-git.md",
     "stanford cs336/3. Architectures, Hyperparameters.md",
     "happy-llm-main/docs/chapter2/第二章 Transformer架构.md",
     "stanford cs336/1. Overview & Tokenization.md",
