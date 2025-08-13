@@ -4,21 +4,17 @@
     "type": "split",
     "children": [
       {
-        "id": "d853448433511067",
+        "id": "96cfa2354118baef",
         "type": "tabs",
         "children": [
           {
-            "id": "ad9651148e3926e8",
+            "id": "8fd61542af4d70ca",
             "type": "leaf",
             "state": {
-              "type": "markdown",
-              "state": {
-                "file": "conflict-files-obsidian-git.md",
-                "mode": "source",
-                "source": false
-              },
+              "type": "empty",
+              "state": {},
               "icon": "lucide-file",
-              "title": "conflict-files-obsidian-git"
+              "title": "New tab"
             }
           }
         ]
@@ -180,8 +176,10 @@
       "table-editor-obsidian:Advanced Tables Toolbar": false
     }
   },
-  "active": "6a3b5b3dc11086ef",
+  "active": "8fd61542af4d70ca",
   "lastOpenFiles": [
+    "Excalidraw/Drawing 2025-08-13 11.27.31.excalidraw.md",
+    "Excalidraw",
     "conflict-files-obsidian-git.md",
     "stanford cs336/3. Architectures, Hyperparameters.md",
     "happy-llm-main/docs/chapter2/第二章 Transformer架构.md",
@@ -196,7 +194,6 @@
     "stanford cs336/assignments/assignment1-basics/cs336_basics/tokenizer/__pycache__/utils.cpython-312.pyc",
     "stanford cs336/assignments/assignment1-basics/cs336_basics/tokenizer/__pycache__",
     "stanford cs336/assignments/assignment1-basics/cs336_basics/__pycache__/tokenizer.cpython-312.pyc",
-    "stanford cs336/assignments/assignment1-basics/cs336_basics/__pycache__/__init__.cpython-312.pyc",
     "stanford cs336/assignments/assignment1-basics/cs336_basics/answer.md",
     "stanford cs336/assignments/assignment1-basics/CHANGELOG.md",
     "stanford cs336/assignments/assignment1-basics/README.md",
@@ -227,7 +224,6 @@
     "happy-llm-main/docs/chapter1/第一章 NLP基础概念.md",
     "happy-llm-main/README_en.md",
     "happy-llm-main/README.md",
-    "happy-llm-main/docs/_sidebar.md",
     "未命名.canvas",
     "Untitled.canvas"
   ]
