@@ -165,7 +165,8 @@
       }
     ],
     "direction": "horizontal",
-    "width": 504.5
+    "width": 504.5,
+    "collapsed": true
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -181,7 +182,7 @@
       "table-editor-obsidian:Advanced Tables Toolbar": false
     }
   },
-  "active": "6a3b5b3dc11086ef",
+  "active": "47eccc72f17b5965",
   "lastOpenFiles": [
     "stanford cs336/Notes/1. Overview & Tokenization.md",
     "stanford cs336/Notes/5. GPU.md",
