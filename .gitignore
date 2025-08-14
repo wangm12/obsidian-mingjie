@@ -1,5 +1,4 @@
 # ignore all .DS_Store
 .DS_Store
 
-workspace.json
-/.obsidian/workspace.json
+.obsidian/workspace.json
