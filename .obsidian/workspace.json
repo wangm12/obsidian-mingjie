@@ -4,11 +4,11 @@
     "type": "split",
     "children": [
       {
-        "id": "96cfa2354118baef",
+        "id": "b697f390a539b506",
         "type": "tabs",
         "children": [
           {
-            "id": "8fd61542af4d70ca",
+            "id": "1b3a59b0061be9ab",
             "type": "leaf",
             "state": {
               "type": "empty",
@@ -176,9 +176,13 @@
       "table-editor-obsidian:Advanced Tables Toolbar": false
     }
   },
-  "active": "8fd61542af4d70ca",
+  "active": "6a3b5b3dc11086ef",
   "lastOpenFiles": [
-    "Excalidraw/Drawing 2025-08-13 11.27.31.excalidraw.md",
+    "Uber Notes/IT Sage/IT Sage Notes.md",
+    "Uber Notes/Untitled.md",
+    "Uber Notes/IT Sage",
+    "Uber Notes",
+    "Uber Notes/IT Sage/stratum-it-helpbot-design.md",
     "Excalidraw",
     "conflict-files-obsidian-git.md",
     "stanford cs336/3. Architectures, Hyperparameters.md",
@@ -192,8 +196,6 @@
     "stanford cs336/assignments/assignment1-basics/cs336_basics/tokenizer/test.py",
     "stanford cs336/2. Pytorch & Resource Accounting.md",
     "stanford cs336/assignments/assignment1-basics/cs336_basics/tokenizer/__pycache__/utils.cpython-312.pyc",
-    "stanford cs336/assignments/assignment1-basics/cs336_basics/tokenizer/__pycache__",
-    "stanford cs336/assignments/assignment1-basics/cs336_basics/__pycache__/tokenizer.cpython-312.pyc",
     "stanford cs336/assignments/assignment1-basics/cs336_basics/answer.md",
     "stanford cs336/assignments/assignment1-basics/CHANGELOG.md",
     "stanford cs336/assignments/assignment1-basics/README.md",
@@ -222,8 +224,6 @@
     "happy-llm-main/docs/chapter3/第三章 预训练语言模型.md",
     "happy-llm-main/docs/chapter4/第四章 大语言模型.md",
     "happy-llm-main/docs/chapter1/第一章 NLP基础概念.md",
-    "happy-llm-main/README_en.md",
-    "happy-llm-main/README.md",
     "未命名.canvas",
     "Untitled.canvas"
   ]
