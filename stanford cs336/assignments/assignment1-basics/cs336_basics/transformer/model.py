@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 import math
-from einops import einsum, reduce
+from einops import einsum, reduce, rearrange
 from jaxtyping import Float, Int
 
 class Linear(nn.Module):
@@ -352,3 +352,107 @@ class RoPE(nn.Module):
 
         # Combine sin and cos parts to get final rotated embeddings
         return sin_part + cos_part
+
+
+def softmax(x: Float[torch.Tensor, "..."], dim: int) -> Float[torch.Tensor, "..."]:
+    # 取出dim中最大值
+    x_max, _ = torch.max(x, dim=dim, keepdim=True)
+    x_exp = torch.exp(x - x_max)
+    return x_exp / torch.sum(x_exp, dim=dim, keepdim=True)
+
+def scaled_dot_product_attention(
+    Q: Float[torch.Tensor, "batch ... queries d_k"],
+    K: Float[torch.Tensor, "batch ... keys d_k"],
+    V: Float[torch.Tensor, "batch ... values d_v"], # values should be the same with queries
+    mask: Float[torch.Tensor, "batch ... queries keys"] | None = None
+) -> Float[torch.Tensor, "batch ... queries d_v"]:
+    QK = einsum(Q, K, "... q d_k, ... k d_k -> ... q k")
+    d_k = Q.shape[-1]
+    denominator = math.sqrt(d_k)
+    QK /= denominator
+    
+    # add mask
+    if mask is not None:
+        # mask 中 false 是需要掩码
+        # 我们 reverse mask，让 false -> True, 在True填上-inf
+        QK = QK.masked_fill(~mask, float("-inf"))
+    
+    # last dim is the key dim; ensure the query sum to 1
+    scores = softmax(QK, dim=-1)
+    
+    attention = einsum(scores, V, "... q k, ... k d_v -> ... q d_v")
+    
+    return attention
+
+
+class MultiheadSelfAttention(nn.Module):
+    def __init__(
+        self, 
+        d_model: int, 
+        num_heads: int, 
+        use_rope: bool = False,
+        max_seq_len: int = 1024,
+        theta: float = 1000,
+        token_positions: Int[torch.Tensor, "... seq_len"] | None = None,
+        device: torch.device | None = None,
+    ):
+        super().__init__()
+        
+        self.num_heads = num_heads
+        self.d_model = d_model
+        # check if num_heads are valid
+        if d_model % num_heads != 0:
+            raise ValueError("d_model must be divisible by num_heads")
+        self.d_k = d_model // num_heads
+        
+        self.rope = None
+        if use_rope:
+            self.rope = RoPE(theta=theta, d_k=self.d_k, max_seq_len=max_seq_len, device=device)
+        self.token_positions = token_positions
+        
+        self.q_proj = Linear(d_model, d_model) # 所有头的projection
+        self.k_proj = Linear(d_model, d_model)
+        self.v_proj = Linear(d_model, d_model)
+        self.output_proj = Linear(d_model, d_model)
+
+    def forward(self, x: Float[torch.Tensor, "... seq_len d_model"]) -> Float[torch.Tensor, "... seq_len d_model"]:
+        seq_len = x.shape[-2]
+        batch_dim = x.shape[:-2]
+        
+        Q: Float[torch.Tensor, "... seq_len d_model"] = self.q_proj(x)
+        K: Float[torch.Tensor, "... seq_len d_model"] = self.k_proj(x)
+        V: Float[torch.Tensor, "... seq_len d_model"] = self.v_proj(x)
+
+        # 将d_model 拆分成num_of_heads 和 d_k
+        # 将heads 作为倒数第二个可以让最后seq_len d_k独立处理
+        Q = rearrange(Q, "... seq_len (heads d_k) -> ... heads seq_len d_k", heads=self.num_heads)
+        K = rearrange(K, "... seq_len (heads d_k) -> ... heads seq_len d_k", heads=self.num_heads)
+        V = rearrange(V, "... seq_len (heads d_k) -> ... heads seq_len d_k", heads=self.num_heads)
+        
+        # rope
+        if self.token_positions is None:
+            # 1. 生成shape 是 (seq_len，)
+            # 2. 增加维度 为了 匹配到 batch, seq_len 的shape
+            # 3. expand 到相同 batch
+            self.token_positions = torch.arange(seq_len).unsqueeze(0).expand(*batch_dim, seq_len)
+        if self.rope is not None:
+            Q = self.rope(Q, self.token_positions)
+            K = self.rope(K, self.token_positions)
+        
+        # causal masking
+        # 1. 生成矩阵(seq_len, seq_len) 全部都是1
+        # 2. 将矩阵下三角包括对角线都设置为0
+        # 3. 1->True; 0->False
+        # mask = torch.triu(torch.ones(seq_len, seq_len), diagonal=1).bool()
+        # scaled_dot_product_attention -> True=-inf
+        # 取反，将mask上三角设置为True（不包括对角线）
+        # qkv = scaled_dot_product_attention(Q, K, V, ~mask)
+        
+        # 可以直接用tril
+        # 上三角都是0，对角线不是
+        mask = torch.tril(torch.ones(seq_len, seq_len)).bool()
+        qkv = scaled_dot_product_attention(Q, K, V, mask)
+        
+        # 合并会d_model
+        qkv = rearrange(qkv, "... heads seq_len d_k -> ... seq_len (heads d_k)")
+        return self.output_proj(qkv)
