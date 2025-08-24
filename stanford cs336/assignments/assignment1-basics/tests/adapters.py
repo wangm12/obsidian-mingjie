@@ -9,7 +9,7 @@ import numpy.typing as npt
 import torch
 from torch import Tensor
 
-from cs336_basics.transformer.model import Linear, Embedding, RMSNorm, SwiGLU, RoPE, softmax, scaled_dot_product_attention, MultiheadSelfAttention
+from cs336_basics.transformer.model import Linear, Embedding, RMSNorm, SwiGLU, RoPE, softmax, scaled_dot_product_attention, MultiheadSelfAttention, TransformerBlock, TransformerLM
 
 
 def run_linear(
@@ -311,7 +311,9 @@ def run_transformer_block(
         Float[Tensor, "batch sequence_length d_model"] Tensor with the output of
         running the Transformer block on the input features while using RoPE.
     """
-    raise NotImplementedError
+    transformer_block = TransformerBlock(d_model, num_heads, d_ff, max_seq_len, theta)
+    transformer_block.load_state_dict(weights)
+    return transformer_block(in_features)
 
 
 def run_transformer_lm(
@@ -338,7 +340,7 @@ def run_transformer_lm(
         num_heads (int): Number of heads to use in multi-headed attention. `d_model` must be
             evenly divisible by `num_heads`.
         d_ff (int): Dimensionality of the feed-forward inner layer (section 3.3).
-        rope_theta (float): The RoPE $\Theta$ parameter.
+        rope_theta (float): The RoPE $Theta$ parameter.
         weights (dict[str, Tensor]):
             State dict of our reference implementation. {num_layers} refers to an
             integer between `0` and `num_layers - 1` (the layer index).
@@ -393,7 +395,9 @@ def run_transformer_lm(
         Float[Tensor, "batch_size sequence_length vocab_size"]: Tensor with the predicted unnormalized
         next-word distribution for each token.
     """
-    raise NotImplementedError
+    transformer_lm = TransformerLM(vocab_size, context_length, num_layers, d_model, num_heads, d_ff, rope_theta)
+    transformer_lm.load_state_dict(weights)
+    return transformer_lm(in_indices)
 
 
 def run_rmsnorm(
