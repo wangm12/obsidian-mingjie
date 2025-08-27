@@ -317,7 +317,7 @@ def merge_pair(
         
         # update the pair counter; add new pairs
         for i in range(len(new_word_bytes) - 1):
-            pair = (word_bytes[i], word_bytes[i+1])
+            pair = (new_word_bytes[i], new_word_bytes[i+1])  # Fix: use new_word_bytes, not word_bytes
             pair_counter[pair] += count
             pair_to_words[pair].add(new_word_bytes)
         
