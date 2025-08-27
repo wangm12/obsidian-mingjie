@@ -10,6 +10,7 @@ import torch
 from torch import Tensor
 
 from cs336_basics.transformer.model import Linear, Embedding, RMSNorm, SwiGLU, RoPE, softmax, scaled_dot_product_attention, MultiheadSelfAttention, TransformerBlock, TransformerLM
+from cs336_basics.tokenizer.train_bpe_tokenizer import train_bpe_tokenizer
 
 
 def run_linear(
@@ -638,4 +639,5 @@ def run_train_bpe(
                 representing that <token1> was merged with <token2>.
                 Merges are ordered by order of creation.
     """
-    raise NotImplementedError
+    
+    return train_bpe_tokenizer(input_path, vocab_size, special_tokens)

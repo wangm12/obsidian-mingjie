@@ -1,14 +1,11 @@
 import regex as re
 import collections
 import multiprocessing
-import heapq
 import pickle
 import os
-from utils import find_chunk_boundaries, convert_word_to_bytes
+from cs336_basics.tokenizer.utils import find_chunk_boundaries, convert_word_to_bytes
 
-########################################################
-
-def initialize_vocab(vocab: dict, vocab_reverse: dict, initial_vocab_size: int):
+def initialize_vocab(vocab: dict, initial_vocab_size: int):
     """
     Initialize vocabulary with byte values from 0 to initial_vocab_size-1.
     
@@ -18,27 +15,23 @@ def initialize_vocab(vocab: dict, vocab_reverse: dict, initial_vocab_size: int):
     
     Args:
         vocab (dict): Dictionary mapping token IDs to byte sequences (modified in place)
-        vocab_reverse (dict): Dictionary mapping byte sequences to token IDs (modified in place)
         initial_vocab_size (int): Number of initial byte tokens (typically 256)
     
     Returns:
-        None (modifies vocab and vocab_reverse in place)
+        None (modifies vocab in place)
     
     Example:
-        >>> vocab, vocab_reverse = {}, {}
-        >>> initialize_vocab(vocab, vocab_reverse, 256)
+        >>> vocab = {}
+        >>> initialize_vocab(vocab, 256)
         >>> vocab[65]  # Returns b'A' (ASCII 65)
-        >>> vocab_reverse[b'A']  # Returns 65
     """
-    # vocab: index -> byte; vocab_reverse: byte -> index
+    # vocab: index -> byte
     for i in range(initial_vocab_size):
         b = bytes([i])
         vocab[i] = b
-        vocab_reverse[b] = i
-    # return nothing; in theory, it should get updated already as python is pass by reference
     return
 
-def add_special_tokens(vocab, vocab_reverse, special_tokens: list[str]):
+def add_special_tokens(vocab, special_tokens: list[str]):
     """
     Add special tokens to the vocabulary if they don't already exist.
     
@@ -47,26 +40,23 @@ def add_special_tokens(vocab, vocab_reverse, special_tokens: list[str]):
     
     Args:
         vocab (dict): Dictionary mapping token IDs to byte sequences (modified in place)
-        vocab_reverse (dict): Dictionary mapping byte sequences to token IDs (modified in place)
         special_tokens (list[str]): List of special token strings to add
     
     Returns:
-        None (modifies vocab and vocab_reverse in place)
+        None (modifies vocab in place)
     
     Example:
-        >>> vocab, vocab_reverse = {}, {}
-        >>> initialize_vocab(vocab, vocab_reverse, 256)
-        >>> add_special_tokens(vocab, vocab_reverse, ["<|endoftext|>", "<pad>"])
+        >>> vocab = {}
+        >>> initialize_vocab(vocab, 256)
+        >>> add_special_tokens(vocab, ["<|endoftext|>", "<pad>"])
         >>> vocab[256]  # Returns b'<|endoftext|>'
     """
     for special_token in special_tokens:
         special_token_byte = special_token.encode("utf-8")
-        # if special_token_byte not in vocab, add in
-        if special_token_byte not in vocab_reverse:
+        # Check if special token already exists in vocab values
+        if special_token_byte not in vocab.values():
             i = len(vocab)
             vocab[i] = special_token_byte
-            vocab_reverse[special_token_byte] = i
-    # return nothing; in theory, it should get updated already as python is pass by reference
     return 
 
 def initialize_vocab_and_special_tokens(initial_vocab_size: int, special_tokens: list[str]):
@@ -81,18 +71,16 @@ def initialize_vocab_and_special_tokens(initial_vocab_size: int, special_tokens:
         special_tokens (list[str]): List of special token strings to add
     
     Returns:
-        tuple: (vocab, vocab_reverse) where:
-            - vocab (dict): Maps token IDs to byte sequences
-            - vocab_reverse (dict): Maps byte sequences to token IDs
+        dict: vocab - Maps token IDs to byte sequences
     
     Example:
-        >>> vocab, vocab_reverse = initialize_vocab_and_special_tokens(256, ["<|endoftext|>"])
+        >>> vocab = initialize_vocab_and_special_tokens(256, ["<|endoftext|>"])
         >>> len(vocab)  # Returns 257 (256 bytes + 1 special token)
     """
-    vocab, vocab_reverse = {}, {}
-    initialize_vocab(vocab, vocab_reverse, initial_vocab_size)
-    add_special_tokens(vocab, vocab_reverse, special_tokens)
-    return vocab, vocab_reverse
+    vocab = {}
+    initialize_vocab(vocab, initial_vocab_size)
+    add_special_tokens(vocab, special_tokens)
+    return vocab
 
 ########################################################
 
@@ -179,7 +167,7 @@ def process_chunk(queue: multiprocessing.Queue, input_path: str, word_counter: c
         chunk = f.read(chunk_boundary_end - chunk_boundary_start)
         
     # split the chunk by pattern; need to decode first because we are using regex
-    split_chunks = re.split(f"({special_tokens_regex})", chunk.decode("utf-8"))
+    split_chunks = re.split(special_tokens_regex, chunk.decode("utf-8"))
     
     # update the word counter
     for chunk in split_chunks:
@@ -266,14 +254,13 @@ def merge_pair(
     word_counter: collections.Counter,
     pair_counter: collections.defaultdict,
     pair_to_words: collections.defaultdict,
-    heap: list[tuple[int, tuple[bytes, bytes]]]
 ):
     """
     Merge the most frequent byte pair in all words containing it.
     
     This function performs a single BPE merge operation. It finds all words containing
     the specified pair, merges the pair into a single token, and updates all relevant
-    data structures (word counter, pair counter, pair-to-words index, and heap).
+    data structures (word counter, pair counter, and pair-to-words index).
     
     Args:
         most_frequent_pair (tuple[bytes, bytes]): The byte pair to merge
@@ -281,7 +268,6 @@ def merge_pair(
         word_counter (collections.Counter): Word frequency counter (modified in place)
         pair_counter (defaultdict): Pair frequency counter (modified in place)
         pair_to_words (defaultdict): Pair-to-words index (modified in place)
-        heap (list): Priority queue of pairs by frequency (modified in place)
     
     Returns:
         None (modifies data structures in place)
@@ -325,23 +311,22 @@ def merge_pair(
         
         # update the pair counter; remove old pairs
         for i in range(len(word_bytes) - 1):
-            pair = tuple(word_bytes[i:i+2])
+            pair = (word_bytes[i], word_bytes[i+1])  
             pair_counter[pair] -= count
             pair_to_words[pair].discard(word_bytes)
         
         # update the pair counter; add new pairs
         for i in range(len(new_word_bytes) - 1):
-            pair = tuple(new_word_bytes[i:i+2])
+            pair = (word_bytes[i], word_bytes[i+1])
             pair_counter[pair] += count
             pair_to_words[pair].add(new_word_bytes)
-            heapq.heappush(heap, (-count, pair))
         
         # update the word counter; delete old word_bytes and add new word_bytes
         del word_counter[word_bytes]
         word_counter[new_word_bytes] += count
     return
 
-def merge_pairs(vocab: dict, vocab_reverse: dict, word_counter: collections.Counter, vocab_size: int):
+def merge_pairs(vocab: dict, word_counter: collections.Counter, vocab_size: int):
     """
     Perform BPE merges until reaching the target vocabulary size.
     
@@ -351,7 +336,6 @@ def merge_pairs(vocab: dict, vocab_reverse: dict, word_counter: collections.Coun
     
     Args:
         vocab (dict): Token ID to bytes mapping (modified in place)
-        vocab_reverse (dict): Bytes to token ID mapping (modified in place)  
         word_counter (collections.Counter): Word frequency counter (modified in place)
         vocab_size (int): Target vocabulary size
     
@@ -359,39 +343,30 @@ def merge_pairs(vocab: dict, vocab_reverse: dict, word_counter: collections.Coun
         list: List of merged byte sequences in order of merging
     
     Example:
-        >>> vocab, vocab_reverse = initialize_vocab_and_special_tokens(256, [])
+        >>> vocab = initialize_vocab_and_special_tokens(256, [])
         >>> word_counter = Counter({(b'h', b'e', b'l', b'l', b'o'): 10})
-        >>> merges = merge_pairs(vocab, vocab_reverse, word_counter, 260)
+        >>> merges = merge_pairs(vocab, word_counter, 260)
         >>> # Returns list of 4 merges, e.g., [b'll', b'he', b'llo', b'hello']
     """
     merges = []
-    merges_set = set()
     merge_counts = vocab_size - len(vocab)
     
     pair_counter, pair_to_words = build_pair_counter(word_counter)
     
-    # use a max heap for O(log n) extraction of most frequent pair
-    heap = [(-freq, pair) for pair, freq in pair_counter.items()]
-    heapq.heapify(heap)
-    
     while merge_counts > 0:
         # find the highest frequency pair
-        _, most_frequent_pair = heapq.heappop(heap)
-        if most_frequent_pair in merges_set:
-            continue
-            
-        merges_set.add(most_frequent_pair)
+        most_frequent_pair_count = max(pair_counter.values())
+        most_frequent_pair = max([pair for pair, freq in pair_counter.items() if freq == most_frequent_pair_count])
 
-        pair_bytes = vocab[vocab_reverse[most_frequent_pair[0]]] + vocab[vocab_reverse[most_frequent_pair[1]]]
+        pair_bytes = most_frequent_pair[0] + most_frequent_pair[1]
         pair_bytes_index = len(vocab)
         
-        # add the pair to the vocab, vocab_reverse, merges
+        # add the pair to the vocab and merges
         vocab[pair_bytes_index] = pair_bytes
-        vocab_reverse[pair_bytes] = pair_bytes_index
         merges.append(most_frequent_pair)
         
         # merge the pair
-        merge_pair(most_frequent_pair, pair_bytes, word_counter, pair_counter, pair_to_words, heap)
+        merge_pair(most_frequent_pair, pair_bytes, word_counter, pair_counter, pair_to_words)
         
         merge_counts -= 1
     
@@ -431,7 +406,7 @@ def train_bpe_tokenizer(input_path: str, vocab_size: int, special_tokens: list[s
         >>> len(merges)  # Returns 9742 (10000 - 256 - 2 special tokens)
     """
     # STEP 1: initialize
-    vocab, vocab_reverse = initialize_vocab_and_special_tokens(256, special_tokens)
+    vocab = initialize_vocab_and_special_tokens(256, special_tokens)
     
     # STEP 2: pre-tokenization
     file_size = os.path.getsize(input_path)
@@ -445,7 +420,7 @@ def train_bpe_tokenizer(input_path: str, vocab_size: int, special_tokens: list[s
     word_counter = pre_tokenize(input_path, chunk_size, special_tokens, split_special_token)
     
     # STEP 3: BPE merge
-    merges = merge_pairs(vocab, vocab_reverse, word_counter, vocab_size)
+    merges = merge_pairs(vocab, word_counter, vocab_size)
     
     return vocab, merges
 
@@ -463,27 +438,27 @@ if __name__ == "__main__":
             "vocab_size": 10000,
             "special_tokens": ["<|endoftext|>"]
         },
-        # {
-        #     "name": "TinyStoriesV2-GPT4-valid",
-        #     "path": "../../data/TinyStoriesV2-GPT4-valid.txt",
-        #     "output_path": "../../data/output",
-        #     "vocab_size": 10000,
-        #     "special_tokens": ["<|endoftext|>"]
-        # },
-        # {
-        #     "name": "owt_train",
-        #     "path": "../../data/owt_train.txt",
-        #     "output_path": "../../data/output",
-        #     "vocab_size": 32000,
-        #     "special_tokens": ["<|endoftext|>"]
-        # },
-        # {
-        #     "name": "owt_valid",
-        #     "path": "../../data/owt_valid.txt",
-        #     "output_path": "../../data/output",
-        #     "vocab_size": 32000,
-        #     "special_tokens": ["<|endoftext|>"]
-        # }
+        {
+            "name": "TinyStoriesV2-GPT4-valid",
+            "path": "../../data/TinyStoriesV2-GPT4-valid.txt",
+            "output_path": "../../data/output",
+            "vocab_size": 10000,
+            "special_tokens": ["<|endoftext|>"]
+        },
+        {
+            "name": "owt_train",
+            "path": "../../data/owt_train.txt",
+            "output_path": "../../data/output",
+            "vocab_size": 32000,
+            "special_tokens": ["<|endoftext|>"]
+        },
+        {
+            "name": "owt_valid",
+            "path": "../../data/owt_valid.txt",
+            "output_path": "../../data/output",
+            "vocab_size": 32000,
+            "special_tokens": ["<|endoftext|>"]
+        }
     ]
     
     # Store results for table display
