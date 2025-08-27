@@ -511,10 +511,10 @@ if __name__ == "__main__":
     ======================================================================
     Dataset                        | Time (seconds)  | Merges    
     ----------------------------------------------------------------------
-    TinyStoriesV2-GPT4-train       | 38.58           | 9743      
-    TinyStoriesV2-GPT4-valid       | 2.70            | 9743      
-    owt_train                      | 1625.86         | 31743     
-    owt_valid                      | 112.64          | 31743     
+    TinyStoriesV2-GPT4-train       | 54.76           | 9743      
+    TinyStoriesV2-GPT4-valid       | 5.77            | 9743      
+    owt_train                      | 3894.50         | 31743     
+    owt_valid                      | 576.05          | 31743     
     ======================================================================
     """
     print("\nRESULTS TABLE")
