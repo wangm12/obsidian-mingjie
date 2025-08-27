@@ -242,7 +242,7 @@ def build_pair_counter(word_counter: collections.Counter):
     
     for word_bytes, count in word_counter.items():
         for i in range(len(word_bytes) - 1):
-            pair = tuple(word_bytes[i:i+2])
+            pair = (word_bytes[i], word_bytes[i+1])  # Direct tuple creation is faster
             pair_counter[pair] += count
             pair_to_words[pair].add(word_bytes)
     
@@ -311,14 +311,18 @@ def merge_pair(
         
         # update the pair counter; remove old pairs
         for i in range(len(word_bytes) - 1):
-            pair = (word_bytes[i], word_bytes[i+1])  
-            pair_counter[pair] -= count
+            pair = (word_bytes[i], word_bytes[i+1])
+            if pair in pair_counter:  # Only update if pair exists
+                pair_counter[pair] -= count
             pair_to_words[pair].discard(word_bytes)
         
         # update the pair counter; add new pairs
         for i in range(len(new_word_bytes) - 1):
-            pair = (new_word_bytes[i], new_word_bytes[i+1])  # Fix: use new_word_bytes, not word_bytes
-            pair_counter[pair] += count
+            pair = (new_word_bytes[i], new_word_bytes[i+1])
+            if pair in pair_counter:
+                pair_counter[pair] += count
+            else:
+                pair_counter[pair] = count
             pair_to_words[pair].add(new_word_bytes)
         
         # update the word counter; delete old word_bytes and add new word_bytes
@@ -354,9 +358,20 @@ def merge_pairs(vocab: dict, word_counter: collections.Counter, vocab_size: int)
     pair_counter, pair_to_words = build_pair_counter(word_counter)
     
     while merge_counts > 0:
-        # find the highest frequency pair
-        most_frequent_pair_count = max(pair_counter.values())
-        most_frequent_pair = max([pair for pair, freq in pair_counter.items() if freq == most_frequent_pair_count])
+        # Clean up zero/negative entries periodically to maintain performance
+        if merge_counts % 100 == 0:
+            # Remove entries with zero or negative counts
+            pairs_to_remove = [k for k, v in pair_counter.items() if v <= 0]
+            for pair in pairs_to_remove:
+                del pair_counter[pair]
+            
+        # find the highest frequency pair with single-pass optimization
+        if not pair_counter:
+            break  # No more pairs to merge
+        most_frequent_pair = max(pair_counter.items(), key=lambda x: (x[1], x[0]))[0]
+        
+        # Remove the selected pair immediately so we don't select it again
+        del pair_counter[most_frequent_pair]
 
         pair_bytes = most_frequent_pair[0] + most_frequent_pair[1]
         pair_bytes_index = len(vocab)

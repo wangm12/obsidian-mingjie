@@ -183,6 +183,7 @@
   },
   "active": "6a3b5b3dc11086ef",
   "lastOpenFiles": [
+    "stanford cs336/assignments/assignment1-basics/cs336_basics/tokenizer/optimizations.md",
     "stanford cs336/assignments/assignment1-basics/data/output/owt_valid_merges.pkl",
     "stanford cs336/assignments/assignment1-basics/data/output/owt_valid_vocab.pkl",
     "stanford cs336/assignments/assignment1-basics/data/output/owt_train_merges.pkl",
@@ -194,7 +195,6 @@
     "stanford cs336/assignments/assignment1-basics/debug_merge_145_detailed.py",
     "stanford cs336/assignments/assignment1-basics/debug_merge_145.py",
     "stanford cs336/assignments/assignment1-basics/data/output/TinyStoriesV2-GPT4-valid_merges.pkl",
-    "stanford cs336/assignments/assignment1-basics/data/output/TinyStoriesV2-GPT4-valid_vocab.pkl",
     "stanford cs336/Notes/3. Architectures, Hyperparameters.md",
     "stanford cs336/Notes/5. GPU.md",
     "stanford cs336/Notes/1. Overview & Tokenization.md",
