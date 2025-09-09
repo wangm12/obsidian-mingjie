@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "stanford cs336/Notes/3. Architectures, Hyperparameters.md",
+                "file": "stanford cs336/pytorch/pytorch 从0到1.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "3. Architectures, Hyperparameters"
+              "title": "pytorch 从0到1"
             }
           }
         ]
@@ -78,7 +78,8 @@
       }
     ],
     "direction": "horizontal",
-    "width": 200
+    "width": 200,
+    "collapsed": true
   },
   "right": {
     "id": "c7ded5782d3db2a3",
@@ -141,13 +142,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "stanford cs336/Notes/3. Architectures, Hyperparameters.md",
+                "file": "stanford cs336/Notes/5. GPU.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "3. Architectures, Hyperparameters 的大纲"
+              "title": "5. GPU 的大纲"
             }
           },
           {
@@ -181,8 +182,13 @@
       "table-editor-obsidian:Advanced Tables Toolbar": false
     }
   },
-  "active": "6a3b5b3dc11086ef",
+  "active": "13876a022e335faa",
   "lastOpenFiles": [
+    "stanford cs336/Notes/5. GPU.md",
+    "stanford cs336/pytorch/pytorch 从0到1.md",
+    "stanford cs336/pytorch",
+    "tensor-cookbook",
+    "stanford cs336/Notes/3. Architectures, Hyperparameters.md",
     "stanford cs336/assignments/assignment1-basics/cs336_basics/tokenizer/optimizations.md",
     "stanford cs336/assignments/assignment1-basics/data/output/owt_valid_merges.pkl",
     "stanford cs336/assignments/assignment1-basics/data/output/owt_valid_vocab.pkl",
@@ -193,10 +199,6 @@
     "stanford cs336/assignments/assignment1-basics/debug_heap_state.py",
     "stanford cs336/assignments/assignment1-basics/test_heapitem_debug.py",
     "stanford cs336/assignments/assignment1-basics/debug_merge_145_detailed.py",
-    "stanford cs336/assignments/assignment1-basics/debug_merge_145.py",
-    "stanford cs336/assignments/assignment1-basics/data/output/TinyStoriesV2-GPT4-valid_merges.pkl",
-    "stanford cs336/Notes/3. Architectures, Hyperparameters.md",
-    "stanford cs336/Notes/5. GPU.md",
     "stanford cs336/Notes/1. Overview & Tokenization.md",
     "stanford cs336/Notes/4. Mixture of Experts.md",
     "stanford cs336/Notes/2. Pytorch & Resource Accounting.md",
@@ -228,7 +230,6 @@
     "happy-llm-main/docs/chapter6/readme.md",
     "happy-llm-main/docs/chapter6/6.4[WIP] 偏好对齐.md",
     "happy-llm-main/docs/chapter7/第七章 大模型应用.md",
-    "happy-llm-main/docs/chapter5/第五章 动手搭建大模型.md",
     "未命名.canvas",
     "Untitled.canvas"
   ]
