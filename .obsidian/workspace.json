@@ -4,39 +4,20 @@
     "type": "split",
     "children": [
       {
-        "id": "b17eabf51d4287f4",
+        "id": "599f3659431e06d8",
         "type": "tabs",
         "children": [
           {
-            "id": "b1d2ab9a8f2b447a",
+            "id": "fd2a3e0b14e7a98b",
             "type": "leaf",
             "state": {
-              "type": "markdown",
-              "state": {
-                "file": "LLM/1. RoPE 详解.md",
-                "mode": "source",
-                "source": false
-              },
+              "type": "empty",
+              "state": {},
               "icon": "lucide-file",
-              "title": "1. RoPE 详解"
-            }
-          },
-          {
-            "id": "661dbc44c996c4ac",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "LLM/2. Attention 详解.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "2. Attention 详解"
+              "title": "新标签页"
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "vertical"
@@ -93,8 +74,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 273.51103591918945,
-    "collapsed": true
+    "width": 273.51103591918945
   },
   "right": {
     "id": "c7ded5782d3db2a3",
@@ -197,14 +177,20 @@
       "table-editor-obsidian:Advanced Tables Toolbar": false
     }
   },
-  "active": "661dbc44c996c4ac",
+  "active": "6a3b5b3dc11086ef",
   "lastOpenFiles": [
-    "未命名.md",
+    "oracle-cloud/Oracle Cloud甲骨文永久免费云服务器注册及配置指南.md",
+    "LLM/cs229/Stanford CS229 Machine Learning 核心复习讲义.md",
+    "LLM/LLM 0-1.md",
+    "LLM/cs229",
+    "llm-from-scratch/ch03 - Attention Mechanisms.md",
+    "llm-from-scratch/ch02 - Embedding.md",
+    "llm-from-scratch/ch01 - Intro.md",
+    "LLM/0-1",
     "LLM/2. Attention 详解.md",
+    "未命名.md",
     "LLM/1. RoPE 详解.md",
     "LLM/stanford cs336/Notes/1. Overview & Tokenization.md",
-    "llm-from-scratch/ch02 - Embedding.md",
-    "oracle-cloud/Oracle Cloud甲骨文永久免费云服务器注册及配置指南.md",
     "stanford cs336/pytorch/pytorch 从0到1.md",
     "stanford cs336/pytorch/PyTorch Internals.md",
     "Pasted image 20251019191241.png",
@@ -222,8 +208,6 @@
     "stanford cs336/assignments/assignment1-basics/data/output/owt_train_merges.pkl",
     "stanford cs336/assignments/assignment1-basics/data/output/owt_train_vocab.pkl",
     "stanford cs336/assignments/assignment1-basics/optimize_current.md",
-    "stanford cs336/assignments/assignment1-basics/cs336_basics/tokenizer/train_bpe_tokenizer_optimized.py",
-    "stanford cs336/assignments/assignment1-basics/debug_heap_state.py",
     "stanford cs336/Notes/1. Overview & Tokenization.md",
     "stanford cs336/Notes/4. Mixture of Experts.md",
     "stanford cs336/Notes/2. Pytorch & Resource Accounting.md",
@@ -232,11 +216,7 @@
     "Excalidraw/Drawing 2025-08-13 11.27.31.excalidraw.md",
     "happy-llm-main/docs/chapter2/第二章 Transformer架构.md",
     "stanford cs336/assignments/assignment1-basics/cs336_basics/answer.md",
-    "stanford cs336/assignments/assignment1-basics/CHANGELOG.md",
-    "stanford cs336/assignments/assignment1-basics/README.md",
-    "llm-from-scratch/ch01 - Intro.md",
     "stanford cs336/Notes/image/original transformer.png",
-    "comfyui/comfyui 学习笔记.md",
     "stanford cs336/Notes/image/AdaGradUpdateEqual.png",
     "happy-llm-main/docs/images/6-images/7.1-1.png",
     "happy-llm-main/docs/images/6-images/3-2.jpg",
